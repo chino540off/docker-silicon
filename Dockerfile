@@ -1,14 +1,11 @@
 FROM alpine
 
+ENV DEPS git cmake make g++ boost-dev
+
 RUN set -ex \
 && apk upgrade \
 && apk update \
-&& apk add --update \
-	git \
-	cmake \
-	make \
-	g++ \
-	boost-dev \
+&& apk add --update $DEPS \
 && rm -rf /var/cache/apk/* \
 && mkdir -p /tmp \
 && cd /tmp \
@@ -20,6 +17,7 @@ RUN set -ex \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	.. \
 && make -j 4 install \
+&& rm -rf /tmp/iod \
 && mkdir -p /tmp \
 && cd /tmp \
 && git clone https://github.com/matt-42/silicon.git \
@@ -30,11 +28,7 @@ RUN set -ex \
 	-DCMAKE_INSTALL_PREFIX=/usr \
 	.. \
 && make -j 4 install \
-&& apk del \
-	git \
-	cmake \
-	make \
-	g++ \
-	boost-dev \
+&& rm -rf /tmp/silicon \
+&& apk del $DEPS \
 && rm -rf /var/cache/apk/* \
 && echo Done
